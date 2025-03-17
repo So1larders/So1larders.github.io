@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Control Simulator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: #0F172A;
+      color: #F8FAFC;
+    }
+
+    nav {
+      background: #1E293B;
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #334155;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    nav a {
+      color: #94A3B8;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    .contact-info {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      color: #94A3B8;
+    }
+
+    .contact-info a {
+      color: #E2E8F0;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .contact-info a:hover {
+      color: #4F46E5;
+    }
+    nav a:hover {
+      background: #334155;
+      color: #E2E8F0;
+    }
+
+    .container {
+      margin-top: 80px;
+      padding: 2rem;
+      min-height: calc(100vh - 80px);
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #main .hero {
+      background: #1E293B;
+      padding: 4rem;
+      border-radius: 16px;
+      text-align: center;
+      margin-bottom: 2rem;
+      border: 1px solid #334155;
+    }
+
+    #main .hero img {
+      width: 200px;
+      margin-bottom: 2rem;
+      border-radius: 12px;
+    }
+
+    #main h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #E2E8F0;
+    }
+
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .city-card {
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: transform 0.3s;
+    }
+
+    .city-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border: 1px solid #334155;
+    }
+
+    .city-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      color: #94A3B8;
+      font-size: 0.9rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #334155;
+    }
+
+    .stat-value {
+      color: #E2E8F0;
+      font-weight: 500;
+    }
+
+    #resources .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .resource-card {
+      background: #1E293B;
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid #334155;
+    }
+
+    .resource-card h3 {
+      color: #94A3B8;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .resource-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+
+    .construction-controls {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 14px 24px;
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #E2E8F0;
+      font-size: 1.1rem;
+      transition: all 0.3s;
+    }
+
+    .search-input::placeholder {
+      color: #64748B;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #4F46E5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    .category-filter {
+      padding: 14px 24px;
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #E2E8F0;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .category-filter:hover {
+      border-color: #4F46E5;
+    }
+
+    .blueprint-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .blueprint-card {
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .blueprint-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .blueprint-card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      border-bottom: 1px solid #334155;
+    }
+
+    .blueprint-info {
+      padding: 1.5rem;
+    }
+
+    .blueprint-info h3 {
+      margin-bottom: 1.5rem;
+      color: #E2E8F0;
+      font-size: 1.4rem;
+    }
+
+    .requirements {
+      display: flex;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .req-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: #0F172A;
+      padding: 10px 16px;
+      border-radius: 8px;
+    }
+
+    .req-icon {
+      font-size: 1.4rem;
+    }
+
+    .req-value {
+      color: #E2E8F0;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .build-btn {
+      width: 100%;
+      padding: 16px;
+      background: #4F46E5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .build-btn:hover {
+      background: #4338CA;
+      transform: translateY(-2px);
+    }
+
+    .build-time {
+      text-align: center;
+      margin-top: 1.2rem;
+      color: #94A3B8;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.5rem;
+      }
+
+      .resource-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .resource-card {
+        padding: 1.5rem;
+      }
+
+      .resource-value {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem;
+        margin-top: 120px;
+      }
+
+      #main .hero {
+        padding: 2rem 1rem;
+      }
+
+      #main h1 {
+        font-size: 2rem;
+      }
+
+      .city-grid,
+      .blueprint-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .resource-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .construction-controls {
+        flex-direction: column;
+      }
+
+      .search-input,
+      .category-filter {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      .blueprint-card img {
+        height: 180px;
+      }
+
+      .resource-card {
+        padding: 1rem;
+      }
+
+      .resource-value {
+        font-size: 2rem;
+      }
+
+      .build-btn {
+        padding: 14px;
+        font-size: 1rem;
+      }
+
+      .req-item {
+        padding: 8px 12px;
+      }
+    }
+    #resources .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .resource-card {
+      background: #1E293B;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .resource-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .resource-card h3 {
+      color: #94A3B8;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .resource-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+
+    @media (max-width: 768px) {
+      #resources .resource-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .resource-card {
+        padding: 1.2rem;
+      }
+
+      .resource-value {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #resources .resource-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .resource-card {
+        padding: 1rem;
+      }
+
+      .resource-value {
+        font-size: 1.5rem;
+      }
+
+      .resource-card h3 {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <ul>
+    <li><a href="#main">Головна</a></li>
+    <li><a href="#my-city">Моє місто</a></li>
+    <li><a href="#build">Будувати</a></li>
+    <li><a href="#resources">Ресурси</a></li>
+  </ul>
+</nav>
+
+<div class="container" id="main">
+  <div class="hero">
+    <img src="logo.jpg" alt="Лого міста">
+    <h1>City Control Simulator</h1>
+    <div class="contact-info">
+      <p>Email: <a href="mailto:MyProjectSimulator@gmail.com">info@citycontrolsimulator.com</a></p>
+      <p>Телефон: <a href="tel:+38021411562">+380 21 411 56 2</a></p>
+    </div>
+  </div>
+</div>
+
+
+<div class="container" id="my-city" style="display: none;">
+  <h1 style="margin-bottom: 2rem;">Моє місто</h1>
+  <div class="city-grid">
+    <div class="city-card">
+      <img src="House.jpg" alt="Житловий комплекс">
+      <h3>Житловий комплекс</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">2 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">800</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">70</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="office.jpg" alt="Офісний центр">
+      <h3>Офісний центр</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">8 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">1000</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">200</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="Hospital.jpg" alt="Лікарня">
+      <h3>Лікарня</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">5 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">1200</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">150</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="school.jpg" alt="Школа">
+      <h3>Школа</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">1.5 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">600</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">90</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="TC.jpg" alt="Торговий центр">
+      <h3>Торговий центр</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">10 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">1500</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">250</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="park.jpg" alt="Парк">
+      <h3>Парк</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">800 тис $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">400</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">50</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="sport.jpg" alt="Спорткомплекс">
+      <h3>Спорткомплекс</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">3.2 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">900</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">110</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="busStop.jpg" alt="Транспортний вузол">
+      <h3>Транспортний вузол</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">4.5 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">1100</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">180</span></div>
+      </div>
+    </div>
+
+    <div class="city-card">
+      <img src="build.png" alt="Індустріальна зона">
+      <h3>Індустріальна зона</h3>
+      <div class="stats">
+        <div class="stat-item"><span>Вартість:</span><span class="stat-value">6 млн $</span></div>
+        <div class="stat-item"><span>Ресурси:</span><span class="stat-value">1300</span></div>
+        <div class="stat-item"><span>Будівельники:</span><span class="stat-value">220</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="resources" style="display: none;">
+  <h1 style="margin-bottom: 2rem;">Ресурси</h1>
+  <div class="resource-grid">
+    <div class="resource-card">
+      <h3>Загальний бюджет</h3>
+      <div class="resource-value">24.4M $</div>
+    </div>
+    <div class="resource-card">
+      <h3>Загальні ресурси</h3>
+      <div class="resource-value">8,450</div>
+    </div>
+    <div class="resource-card">
+      <h3>Будівельники</h3>
+      <div class="resource-value">1,230</div>
+    </div>
+  </div>
+</div>
+
+<!-- Будувати -->
+<div class="container" id="build" style="display: none;">
+  <h1 style="margin-bottom: 2rem;">Будівельне меню</h1>
+
+  <div class="construction-controls">
+    <input type="text" placeholder="🔍 Пошук будівель..." class="search-input">
+    <select class="category-filter">
+      <option value="all">Всі категорії</option>
+      <option value="housing">Житлові</option>
+      <option value="commercial">Комерційні</option>
+      <option value="infrastructure">Інфраструктура</option>
+      <option value="education">Освіта</option>
+    </select>
+  </div>
+
+  <div class="blueprint-grid">
+    <!-- Житловий комплекс -->
+    <div class="blueprint-card">
+      <img src="House.jpg" alt="Житловий комплекс">
+      <div class="blueprint-info">
+        <h3>Житловий комплекс</h3>
+        <div class="requirements">
+          <div class="req-item">
+            <span class="req-icon">💰</span>
+            <span class="req-value">2M $</span>
+          </div>
+          <div class="req-item">
+            <span class="req-icon">🛠️</span>
+            <span class="req-value">800</span>
+          </div>
+          <div class="req-item">
+            <span class="req-icon">👷</span>
+            <span class="req-value">70</span>
+          </div>
+        </div>
+        <button class="build-btn">Побудувати</button>
+        <div class="build-time">⏳ 2 роки</div>
+      </div>
+    </div>
+
+    <!-- Торговий центр -->
+    <div class="blueprint-card">
+      <img src="TC.jpg" alt="Проект торгового центру">
+      <div class="blueprint-info">
+        <h3>Торговий центр</h3>
+        <div class="requirements">
+          <div class="req-item">
+            <span class="req-icon">💰</span>
+            <span class="req-value">10M $</span>
+          </div>
+          <div class="req-item">
+            <span class="req-icon">🛠️</span>
+            <span class="req-value">1500</span>
+          </div>
+          <div class="req-item">
+            <span class="req-icon">👷</span>
+            <span class="req-value">250</span>
+          </div>
+        </div>
+        <button class="build-btn">Побудувати</button>
+        <div class="build-time">⏳ 4 роки</div>
+      </div>
+    </div>
+
+    <!-- Лікарня -->
+    <div class="blueprint-card">
+      <img src="Hospital.jpg" alt="Проект лікарні">
+      <div class="blueprint-info">
+        <h3>Лікарня</h3>
+        <div class="requirements">
+          <div class="req-item">
+            <span class="req-icon">💰</span>
+            <span class="req-value">5M $</span>
+          </div>
+          <div class="req-item">
+            <span class="req-icon">🛠️</span>
+            <span class="req-value">1200</span>
+          </div>
+          <div class="req-item">
+            <span class="req-icon">👷</span>
+            <span class="req-value">150</span>
+          </div>
+        </div>
+        <button class="build-btn">Побудувати</button>
+        <div class="build-time">⏳ 3 роки</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Черга будівництва -->
+  <div class="construction-queue">
+    <h2>Черга будівництва</h2>
+    <div class="queue-list">
+      <div class="queue-item">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href');
+      document.querySelectorAll('.container').forEach(page => {
+        page.style.display = 'none';
+      });
+      document.querySelector(targetId).style.display = 'block';
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.container').forEach(page => {
+      page.style.display = 'none';
+    });
+    document.getElementById('main').style.display = 'block';
+  });
+</script>
+</body>
+</html>
