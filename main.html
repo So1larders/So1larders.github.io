@@ -17,6 +17,41 @@
       color: #F8FAFC;
     }
 
+
+    .improve-btn {
+      background: #10B981;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .improve-btn:hover {
+      background: #059669;
+    }
+    .improve-btn {
+      background: #3B82F6;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .improve-btn:hover {
+      background: #2563EB;
+    }
+
+    .improve-btn:disabled {
+      background: #64748B;
+      cursor: not-allowed;
+    }
+
     nav {
       background: #1E293B;
       padding: 1rem 2rem;
@@ -394,7 +429,53 @@
       transform: translateY(-5px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
+    #registration-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
 
+    .registration-form {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 400px;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.3rem 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 1rem;
+      text-align: center;
+    }
     .resource-card h3 {
       color: #94A3B8;
       font-size: 1.1rem;
@@ -438,6 +519,7 @@
       .resource-card h3 {
         font-size: 1rem;
       }
+
     }
   </style>
 </head>
@@ -462,7 +544,27 @@
   </div>
 </div>
 
-
+<div id="registration-overlay">
+  <div class="registration-form">
+    <h2>Реєстрація</h2>
+    <form id="registrationForm">
+      <div class="form-group">
+        <input type="text" id="nameInput" placeholder="Ім'я" required>
+      </div>
+      <div class="form-group">
+        <input type="email" id="emailInput" placeholder="Email" required>
+      </div>
+      <div class="form-group">
+        <input type="password" id="passwordInput" placeholder="Пароль" required>
+      </div>
+      <div class="form-group">
+        <input type="password" id="confirmPasswordInput" placeholder="Підтвердіть пароль" required>
+      </div>
+      <button type="submit" class="submit-btn">Зареєструватися</button>
+    </form>
+    <div id="error-message" class="error-message"></div>
+  </div>
+</div>
 <div class="container" id="my-city" style="display: none;">
   <h1 style="margin-bottom: 2rem;">Моє місто</h1>
   <div class="city-grid">
@@ -563,15 +665,15 @@
   <div class="resource-grid">
     <div class="resource-card">
       <h3>Загальний бюджет</h3>
-      <div class="resource-value">24.4M $</div>
+      <div class="resource-value" id="budget-value">24.4M $</div>
     </div>
     <div class="resource-card">
       <h3>Загальні ресурси</h3>
-      <div class="resource-value">8,450</div>
+      <div class="resource-value" id="materials-value">8,450</div>
     </div>
     <div class="resource-card">
       <h3>Будівельники</h3>
-      <div class="resource-value">1,230</div>
+      <div class="resource-value" id="workers-value">1,230</div>
     </div>
   </div>
 </div>
@@ -600,15 +702,15 @@
         <div class="requirements">
           <div class="req-item">
             <span class="req-icon">💰</span>
-            <span class="req-value">2M $</span>
+            <span class="req-value" data-type="cost">2000000</span>
           </div>
           <div class="req-item">
             <span class="req-icon">🛠️</span>
-            <span class="req-value">800</span>
+            <span class="req-value" data-type="materials">800</span>
           </div>
           <div class="req-item">
             <span class="req-icon">👷</span>
-            <span class="req-value">70</span>
+            <span class="req-value" data-type="workers">70</span>
           </div>
         </div>
         <button class="build-btn">Побудувати</button>
@@ -695,5 +797,7 @@
     document.getElementById('main').style.display = 'block';
   });
 </script>
+
+<script src="JsMain.js"></script>
 </body>
 </html>
